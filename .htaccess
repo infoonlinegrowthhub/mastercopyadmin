@@ -1,0 +1,30 @@
+# Enable mod_rewrite
+RewriteEngine On
+
+# Allow access to specific folders for assets (CSS, JS, images)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(css|js|uploads)/ - [L]
+
+
+# Redirect from post.php?slug=X to /category/slug
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+post\.php\?slug=([^\s&]+) [NC]
+RewriteRule ^ post/$1? [R=301,L]
+
+# Rewrite rule to handle /category-slug/post-slug
+RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ post.php?slug=$2 [L,QSA]
+
+
+# Remove .php extension from URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^/]+)/?$ $1.php [L]
+
+# Custom error pages
+ErrorDocument 404 /404.php
+ErrorDocument 500 /500.php
+
+# Deny access to .htaccess and .htpasswd
+<Files ~ "\.(htaccess|htpasswd)$">
+    Require all denied
+</Files>
